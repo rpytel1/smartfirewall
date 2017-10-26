@@ -24,35 +24,18 @@ module smartfirewall {
                   "Definitions for match criteria";
                uses packet-fields:acl-ipv4-header-fields;
             }
-            container actions {
-               description
-                  "Definitions of action criteria";
-               choice packet-handling {
-                  default "deny";
-                  description
-                     "Packet handling action.";
-                  case deny {
-                      leaf deny {
-                         type empty;
-                         description
-                         "Deny action.";
-                      }
-                  }
-                  case permit {
-                      leaf permit {
-                         type empty;
-                         description
-                           "Permit action.";
-                      }
-                  }
-              }
-           }
            leaf rule-name {
                type string;
                description
                   "A unique name to identify this rule.";
            }
            leaf node-id {
+                type string;
+           }
+           leaf port {
+                type uint32;
+           }
+           leaf protocol {
                 type string;
            }
        }

@@ -90,7 +90,6 @@ public class FirewallListener implements ClusteredDataTreeChangeListener<AccessL
             LOG.info(" Key : " + entry.getKey());
             LOG.info(" Rule Name : " + entry.getRuleName());
             LOG.info(" NodeList :  " + entry.getNodeId());
-            LOG.info(" Actions : " + entry.getActions());
             LOG.info(" Matches " + entry.getMatches());
             LOG.info(" AccessListEntry : " + entry.toString());
         }

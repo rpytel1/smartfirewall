@@ -9,7 +9,7 @@
 package org.opendaylight.smartfirewall.impl;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.smartfirewall.rev150105.access.list.AccessListEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.smartfirewall.rev150105.access.list.access.list.entry.actions.PacketHandling;
+
 
 public class FlowData {
 
@@ -18,9 +18,10 @@ public class FlowData {
     private int dstPrefix;
     private String srcIpAddress = null;
     private int srcPrefix;
-    private PacketHandling packetHandlingAction = null;
     private String nodeId = null;
     private String ruleName = null;
+    private String protocol = null;
+    private long port = 0;
     private long etherType = 0L;
     private int priority = 0;
     private int hardTimeout = 0;
@@ -28,29 +29,27 @@ public class FlowData {
 
     public FlowData(AccessListEntry entry) {
 
-        this.etherType = FirewallConstants.ETH_TYPE ;
+        this.etherType = FirewallConstants.ETH_TYPE;
         // TODO change the priority accordingly
-        this.priority = FirewallConstants.FLOW_PRIORITY ;
-        this.hardTimeout = FirewallConstants.DEFAULT_TIMEOUT_VALUE ;
-        this.idleTimeout = FirewallConstants.DEFAULT_TIMEOUT_VALUE ;
+        this.priority = FirewallConstants.FLOW_PRIORITY;
+        this.hardTimeout = FirewallConstants.DEFAULT_TIMEOUT_VALUE;
+        this.idleTimeout = FirewallConstants.DEFAULT_TIMEOUT_VALUE;
         String dstIpAddressTmp = entry.getMatches().getDestinationIpv4Network().getValue();
         String srcIpAddressTmp = entry.getMatches().getSourceIpv4Network().getValue();
-        String [] parts = dstIpAddressTmp
-                .split(FirewallConstants.SUBNET_MASK_SEPARATOR ) ;
-        this.setDstIpAddress(parts[0]) ;
+        this.port = entry.getPort();
+        this.protocol = entry.getProtocol();
+        String[] parts = dstIpAddressTmp
+                .split(FirewallConstants.SUBNET_MASK_SEPARATOR);
+        this.setDstIpAddress(parts[0]);
         this.dstPrefix = (parts.length == 1) ? 0 : Integer.parseInt(parts[1]);
         parts = srcIpAddressTmp
-                .split(FirewallConstants.SUBNET_MASK_SEPARATOR ) ;
+                .split(FirewallConstants.SUBNET_MASK_SEPARATOR);
         this.setSrcIpAddress(parts[0]);
         this.srcPrefix = (parts.length == 1) ? 0 : Integer.parseInt(parts[1]);
         this.ruleName = entry.getRuleName();
         this.setNodeId(entry.getNodeId());
-        this.setPacketHandlingAction(entry.getActions().getPacketHandling());
     }
 
-    public PacketHandling getPacketHandlingAction() {
-        return packetHandlingAction;
-    }
 
     public String getSrcIpAddress() {
         return srcIpAddress;
@@ -105,8 +104,12 @@ public class FlowData {
         return idleTimeout;
     }
 
-    public void setPacketHandlingAction(PacketHandling packetHandlingAction) {
-        this.packetHandlingAction = packetHandlingAction;
+    public long getPort() {
+        return port;
+    }
+
+    public void setPort(long port) {
+        this.port = port;
     }
 
     @Override
@@ -151,4 +154,11 @@ public class FlowData {
                 '}';
     }
 
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
 }
