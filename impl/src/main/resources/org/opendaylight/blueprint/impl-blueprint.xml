@@ -15,10 +15,24 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"
     odl:type="default" />
 
+  <reference id="mdsalUtils"
+             interface="org.opendaylight.genius.mdsalutil.interfaces.IMdsalApiManager" />
+
   <bean id="provider"
     class="org.opendaylight.smartfirewall.impl.SmartfirewallProvider"
     init-method="init" destroy-method="close">
     <argument ref="dataBroker" />
+  </bean>
+  <bean id="firewallListener"
+        class="org.opendaylight.smartfirewall.impl.FirewallListener">
+    <argument ref="dataBroker" />
+    <argument ref="firewallDSHandler" />
+  </bean>
+
+  <bean id="firewallDSHandler"
+        class="org.opendaylight.smartfirewall.impl.FirewallDataStoreHandler">
+    <argument ref="dataBroker" />
+    <argument ref="mdsalUtils"  />
   </bean>
 
 </blueprint>

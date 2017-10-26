@@ -6,4 +6,55 @@ module smartfirewall {
     revision "2015-01-05" {
         description "Initial revision of smartfirewall model";
     }
+
+    import ietf-packet-fields {
+         prefix packet-fields;
+         revision-date 2016-02-18;
+    }
+
+    container access-list {
+        description
+          "The access-list container contains a list of access-list-entry";
+        list access-list-entry {
+          key "rule-name";
+          description
+            "Access List entry";
+            container matches {
+               description
+                  "Definitions for match criteria";
+               uses packet-fields:acl-ipv4-header-fields;
+            }
+            container actions {
+               description
+                  "Definitions of action criteria";
+               choice packet-handling {
+                  default "deny";
+                  description
+                     "Packet handling action.";
+                  case deny {
+                      leaf deny {
+                         type empty;
+                         description
+                         "Deny action.";
+                      }
+                  }
+                  case permit {
+                      leaf permit {
+                         type empty;
+                         description
+                           "Permit action.";
+                      }
+                  }
+              }
+           }
+           leaf rule-name {
+               type string;
+               description
+                  "A unique name to identify this rule.";
+           }
+           leaf node-id {
+                type string;
+           }
+       }
+    }
 }
