@@ -18,6 +18,8 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin/${openflowplugin.version}/xml/features
   </repository>
   <repository>mvn:org.opendaylight.dluxapps/features-dluxapps/{{VERSION}}/xml/features</repository>
+  <repository>mvn:org.opendaylight.l2switch/features-l2switch/{{VERSION}}/xml/features</repository>
+
   <feature name='odl-smartfirewall-api' version='${project.version}' description='OpenDaylight :: smartfirewall :: api'>
     <feature version='${mdsal.model.version}'>odl-mdsal-models</feature>
     <feature version='${openflowplugin.version}'>odl-openflowplugin-nsf-model</feature>
@@ -29,6 +31,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <feature version="${openflowplugin.version}">odl-openflowplugin-southbound</feature>
     <feature version='${openflowplugin.version}'>odl-openflowplugin-flow-services</feature>
     <feature version='${genius.version}'>odl-genius</feature>
+    <!--<feature version='${l2switch.version}'>odl-l2switch-all</feature>-->
     <feature version='${project.version}'>odl-smartfirewall-api</feature>
     <bundle>mvn:org.opendaylight.smartfirewall/smartfirewall-impl/{{VERSION}}</bundle>
   </feature>

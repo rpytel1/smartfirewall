@@ -81,11 +81,11 @@ public class FirewallDataStoreHandler {
         if (flowBuilder.getDstPrefix() != 0) {
             mkMatches.add(new MatchIpv4Destination(new Ipv4Prefix(flowBuilder.getDstIpAddress() + "/" + Integer.toString(flowBuilder.getDstPrefix()))));
         }
-        if(flowBuilder.getPort()!=0){
-            mkMatches.add(new MatchInPort(new BigInteger(nodeId),flowBuilder.getPort()));
+        if (flowBuilder.getPort() != 0) {
+            mkMatches.add(new MatchInPort(new BigInteger(getNodeId(nodeId)), flowBuilder.getPort()));
         }
-        if(flowBuilder.getProtocol()!=null){
-            switch(flowBuilder.getProtocol()){
+        if (flowBuilder.getProtocol() != null) {
+            switch (flowBuilder.getProtocol()) {
                 case "TCP":
                     mkMatches.add(MatchIpProtocol.TCP);
                     break;
@@ -112,6 +112,8 @@ public class FirewallDataStoreHandler {
         flowEntityBuilder.setSendFlowRemFlag(false);
         flowEntityBuilder.setStrictFlag(false);
         flowEntityBuilder.setTableId((short) 0);
+        flowEntityBuilder.setPriority(120);
+        LOG.info("flow entity priority:" + flowEntityBuilder.build().getPriority());
         flowEntityBuilder.setDpnId(new BigInteger(getNodeId(nodeId)));
         return flowEntityBuilder.build();
     }

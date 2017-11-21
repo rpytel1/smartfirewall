@@ -1,0 +1,15 @@
+{
+  "access-list-entry": [
+    {
+      "rule-name": "permit1",
+      "node-id": "openflow:1",
+      "matches": {
+        "source-ipv4-network": "10.0.0.1/32",
+        "destination-ipv4-network": "10.0.0.2/32"
+      },
+      "port":"80",
+      "protocol":"TCP"
+    }
+  ]
+}
+
