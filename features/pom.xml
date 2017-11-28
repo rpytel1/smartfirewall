@@ -34,6 +34,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
     <openflowplugin.version>0.4.0-Carbon</openflowplugin.version>
     <dluxapps.version>0.5.0-Carbon</dluxapps.version>
     <l2switch.version>0.5.0-Carbon</l2switch.version>
+    <sfc.version>0.5.0-Carbon</sfc.version>
     <configfile.directory>etc/opendaylight/karaf</configfile.directory>
   </properties>
   <dependencyManagement>
@@ -122,6 +123,14 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
       <artifactId>features-l2switch</artifactId>
       <classifier>features</classifier>
       <version>${l2switch.version}</version>
+      <type>xml</type>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.sfc</groupId>
+      <artifactId>features-sfc</artifactId>
+      <classifier>features</classifier>
+      <version>${sfc.version}</version>
       <type>xml</type>
       <scope>runtime</scope>
     </dependency>
