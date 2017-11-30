@@ -25,6 +25,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <feature version='${mdsal.model.version}'>odl-mdsal-models</feature>
     <feature version='${openflowplugin.version}'>odl-openflowplugin-nsf-model</feature>
     <feature version='${genius.version}'>odl-genius-api</feature>
+    <feature version='${sfc.version}'>odl-sfc-ui</feature>
     <feature version='${sfc.version}'>odl-sfc-provider</feature>
     <feature version='${sfc.version}'>odl-sfc-scf-openflow</feature>
     <feature version='${sfc.version}'>odl-sfc-openflow-renderer</feature>
