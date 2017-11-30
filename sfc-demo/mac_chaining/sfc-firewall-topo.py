@@ -16,11 +16,11 @@ if __name__ == "__main__":
 
     h1 = sfc.addHost(sw1)                     #(3) Add host to be the src/dst of the chain
     h2 = sfc.addHost(sw1)
-    # h3 = sfc.addHost(sw1)
+    h3 = sfc.addHost(sw1)
 
     sf1 = sfc.addSf('1', sw2, 'fw')           #(4) Add SFs with the SFF which it is connected and the SF type
-    sf2 = sfc.addSf('2', sw2, 'fw1')
-    sf3 = sfc.addSf('3', sw3, 'dpi')
+    sf2 = sfc.addSf('2', sw3, 'fw1')
+
 
     sfc.addLink(sw1, sw2)                     #(5) Add link among SFFs
     sfc.addLink(sw2, sw3)
@@ -28,7 +28,7 @@ if __name__ == "__main__":
 
     sfc.addGw(sw1)                            #(6) Add gateway at the end of the chain
 
-    chain = ['fw', 'fw1', 'dpi']       #(7) The chain (list of SFs)
+    chain = ['fw', 'fw1']       #(7) The chain (list of SFs)
 
     sfc.addChain('c1', sw1, chain)            #(8) Add the chain with name, classifier and the chain (list of SFs)
 
