@@ -17,6 +17,7 @@ if __name__ == "__main__":
     h1 = sfc.addHost(sw1)                     #(3) Add host to be the src/dst of the chain
     h2 = sfc.addHost(sw1)
     h3 = sfc.addHost(sw1)
+    h4 = sfc.addHost(sw1)
 
     sf1 = sfc.addSf('1', sw2, 'fw')           #(4) Add SFs with the SFF which it is connected and the SF type
     sf2 = sfc.addSf('2', sw3, 'fw1')

@@ -128,7 +128,8 @@ class odlConf(ConfigBase):
         sfdpl['data-plane-locator'] = {}
         sfdpl['data-plane-locator']['transport'] = "service-locator:vxlan-gpe"
         sfdpl['data-plane-locator']['port'] = 6633
-        sfdpl['data-plane-locator']['ip'] = self.controller
+        sffDataPlaneIp="10.0.0.11"
+        sfdpl['data-plane-locator']['ip'] = sffDataPlaneIp
 
         sff['sff-data-plane-locator'].append(sfdpl)
 
