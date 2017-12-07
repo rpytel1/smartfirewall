@@ -275,14 +275,8 @@ class odlConf(ConfigBase):
         acl['acl']['access-list-entries']['ace'] = []
         ace = {}
         ace['matches'] = {}
-        ace['matches']['destination-ipv4-network'] = "10.0.0.2/32"
+        ace['matches']['destination-ipv4-network'] = "10.0.0.0/30"
         ace['matches']['protocol'] = "17"
-        # ace['matches']['source-port-range'] = {}
-        # ace['matches']['source-port-range']['lower-port'] = "0"
-        # ace['matches']['source-port-range']['upper-port'] = "65000"
-        # ace['matches']['destination-port-range'] = {}
-        # ace['matches']['destination-port-range']['lower-port'] = "0"
-        # ace['matches']['destination-port-range']['upper-port'] = "65000"
 
         ace['actions'] = {}
         ace['actions']['service-function-acl:rendered-service-path'] = rsp
@@ -303,7 +297,7 @@ class odlConf(ConfigBase):
         acl['acl']['access-list-entries']['ace'] = []
         ace = {}
         ace['matches'] = {}
-        ace['matches']['destination-ipv4-network'] = "10.0.0.2/32"
+        ace['matches']['destination-ipv4-network'] = "10.0.0.0/30"
         ace['matches']['protocol'] = "6"
         # ace['matches']['source-port-range'] = {}
         # ace['matches']['source-port-range']['lower-port'] = "1"
@@ -330,7 +324,7 @@ class odlConf(ConfigBase):
         acl['acl']['access-list-entries']['ace'] = []
         ace = {}
         ace['matches'] = {}
-        ace['matches']['destination-ipv4-network'] = "10.0.0.1/32"
+        ace['matches']['destination-ipv4-network'] = "10.0.0.4/32"
         ace['matches']['protocol'] = "6"
         # ace['matches']['source-port-range'] = {}
         # ace['matches']['source-port-range']['lower-port'] = "1"
@@ -357,14 +351,8 @@ class odlConf(ConfigBase):
         acl['acl']['access-list-entries']['ace'] = []
         ace = {}
         ace['matches'] = {}
-        ace['matches']['destination-ipv4-network'] = "10.0.0.1/32"
+        ace['matches']['destination-ipv4-network'] = "10.0.0.4/32"
         ace['matches']['protocol'] = "17"
-        # ace['matches']['source-port-range'] = {}
-        # ace['matches']['source-port-range']['lower-port'] = "0"
-        # ace['matches']['source-port-range']['upper-port'] = "65000"
-        # ace['matches']['destination-port-range'] = {}
-        # ace['matches']['destination-port-range']['lower-port'] = "0"
-        # ace['matches']['destination-port-range']['upper-port'] = "65000"
 
         ace['actions'] = {}
         ace['actions']['service-function-acl:rendered-service-path'] = rsp + "-Reverse"
