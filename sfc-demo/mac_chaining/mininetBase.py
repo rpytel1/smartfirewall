@@ -200,17 +200,17 @@ class SFC:
         portSw1 = sw1.ports[link.intf1]
         self.odl.appendSffConf(self.getODLSwConf(sw1), portSw1, str(self.sffs.index(sw1) +1), self.getODLSwConf(sw2), portSw2, str(self.sffs.index(sw2) +1))
 
-    def addChain(self, name, sw1, chain):
+    def addChain(self, name, sw1, chain, id):
 
         chainConf = {}
         chainConf[name] = {}
         chainConf[name]['sfc'] = self.odl.setChain(name, chain)
 
 
-        aclName1 = "acl.up"
-        aclName2 = "acl.down"
-        aclName3 = "acl.tcp.up"
-        aclName4 = "acl.tcp.down"
+        aclName1 = "acl.up" + id
+        aclName2 = "acl.down" + id
+        aclName3 = "acl.tcp.up" + id
+        aclName4 = "acl.tcp.down" + id
 
         chainConf[name]['scf1'] = self.odl.setClassifier1(sw1.name, aclName1)
         chainConf[name]['scf2'] = self.odl.setClassifier2(sw1.name, aclName2)
