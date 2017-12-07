@@ -33,7 +33,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   </feature>
   <feature name='odl-smartfirewall' version='${project.version}' description='OpenDaylight :: smartfirewall'>
     <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
-    <feature version='${l2switch.version}'>odl-l2switch-all</feature>
+    <!--<feature version='${l2switch.version}'>odl-l2switch-all</feature>-->
     <feature version="${openflowplugin.version}">odl-openflowplugin-southbound</feature>
     <feature version='${openflowplugin.version}'>odl-openflowplugin-flow-services</feature>
     <feature version='${genius.version}'>odl-genius</feature>
