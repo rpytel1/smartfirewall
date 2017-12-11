@@ -219,10 +219,21 @@ class odlConf(ConfigBase):
         chainPath['service-function-path']['symmetric-classifier'] = scf2
         chainPath['service-function-path']['symmetric'] = "true"  # "true"
         chainPath['service-function-path']['transport-type'] = "service-locator:mac"
-        if self.sfcEncap == sfcEncap.MAC_CHAIN:
-            chainPath['service-function-path']['sfc-encapsulation'] = "service-locator:mac-chaining"
+        chainPath['service-function-path']['sfc-encapsulation'] = "service-locator:mac-chaining"
 
         return chainPath
+    def setAssymetricChainPath(self, name, scf1):
+        chainPath = {}
+        chainPath['service-function-path'] = {}
+        chainPath['service-function-path']['name'] = name + "-path"
+        chainPath['service-function-path']['service-chain-name'] = name
+        chainPath['service-function-path']['classifier'] = scf1
+        chainPath['service-function-path']['symmetric'] = "false"
+        chainPath['service-function-path']['transport-type'] = "service-locator:mac"
+        chainPath['service-function-path']['sfc-encapsulation'] = "service-locator:mac-chaining"
+
+        return chainPath
+
 
     def setClassifier1(self, sff, aclName):
 

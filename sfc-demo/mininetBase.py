@@ -200,7 +200,7 @@ class SFC:
         portSw1 = sw1.ports[link.intf1]
         self.odl.appendSffConf(self.getODLSwConf(sw1), portSw1, str(self.sffs.index(sw1) +1), self.getODLSwConf(sw2), portSw2, str(self.sffs.index(sw2) +1))
 
-    def addChain(self, name, sw1, chain, id, aclAddress):
+    def addChain(self, name, sw1, chain, id, aclAddress, addReverse):
 
         chainConf = {}
         chainConf[name] = {}
@@ -212,20 +212,26 @@ class SFC:
         aclName4 = "acl.tcp.down" + id
 
         chainConf[name]['scf1'] = self.odl.setClassifier1(sw1.name, aclName1)
-        chainConf[name]['scf2'] = self.odl.setClassifier2(sw1.name, aclName2)
+        if addReverse:
+            chainConf[name]['scf2'] = self.odl.setClassifier2(sw1.name, aclName2)
 
         chainConf[name]['scf3'] = self.odl.setClassifier1(sw1.name, aclName3)
-        chainConf[name]['scf4'] = self.odl.setClassifier2(sw1.name, aclName4)
+        if addReverse:
+            chainConf[name]['scf4'] = self.odl.setClassifier2(sw1.name, aclName4)
 
-        chainConf[name]['sfp'] = self.odl.setChainPath(name, chainConf[name]['scf1']['service-function-classifier']['name'],
+        if addReverse:
+            chainConf[name]['sfp'] = self.odl.setChainPath(name, chainConf[name]['scf1']['service-function-classifier']['name'],
                                                chainConf[name]['scf2']['service-function-classifier']['name'])
-
+        else:
+            chainConf[name]['sfp'] = self.odl.setAssymetricChainPath(name, chainConf[name]['scf1']['service-function-classifier']['name'])
         chainConf[name]['rsp'] = self.odl.rederedRPC(chainConf[name]['sfp']['service-function-path']['name'])
 
         chainConf[name]['acl1'] = self.odl.aclRuleUp(chainConf[name]['rsp']['input']['name'], aclName1, aclAddress)
-        chainConf[name]['acl2'] = self.odl.aclRuleDown(chainConf[name]['rsp']['input']['name'], aclName2, aclAddress)
         chainConf[name]['acl3'] = self.odl.aclRuleUpTcp(chainConf[name]['rsp']['input']['name'], aclName3, aclAddress)
-        chainConf[name]['acl4'] = self.odl.aclRuleDownTcp(chainConf[name]['rsp']['input']['name'], aclName4, aclAddress)
+
+        if addReverse:
+            chainConf[name]['acl2'] = self.odl.aclRuleDown(chainConf[name]['rsp']['input']['name'], aclName2, aclAddress)
+            chainConf[name]['acl4'] = self.odl.aclRuleDownTcp(chainConf[name]['rsp']['input']['name'], aclName4, aclAddress)
 
 
         self.callBackConfs['chain'].append(chainConf)
@@ -292,73 +298,25 @@ class SFC:
             for chainName, conf in chain.iteritems():
                 self.odl.post(self.odl.controller, self.odl.DEFAULT_PORT, self.odl.SERVICE_FUNCTION_CHAIN, conf['sfc'], True)
                 self.odl.post(self.odl.controller, self.odl.DEFAULT_PORT, self.odl.SERVICE_FUNCTION_PATH, conf['sfp'], True)
-
-                if self.odl.sfcEncap == sfcEncap.MAC_CHAIN:
-                    self.odl.post(self.odl.controller, self.odl.DEFAULT_PORT, self.odl.ACCESS_CONTROL_LIST, conf['acl1'], True)
+                self.odl.post(self.odl.controller, self.odl.DEFAULT_PORT, self.odl.ACCESS_CONTROL_LIST, conf['acl1'], True)
+                self.odl.post(self.odl.controller, self.odl.DEFAULT_PORT, self.odl.ACCESS_CONTROL_LIST, conf['acl3'], True)
+                if 'acl2' in conf:
                     self.odl.post(self.odl.controller, self.odl.DEFAULT_PORT, self.odl.ACCESS_CONTROL_LIST, conf['acl2'], True)
-                    self.odl.post(self.odl.controller, self.odl.DEFAULT_PORT, self.odl.ACCESS_CONTROL_LIST, conf['acl3'], True)
+                if 'acl4' in conf:
                     self.odl.post(self.odl.controller, self.odl.DEFAULT_PORT, self.odl.ACCESS_CONTROL_LIST, conf['acl4'], True)
 
-                    self.odl.post(self.odl.controller, self.odl.DEFAULT_PORT, self.odl.SERVICE_RENDERED_PATH, conf['rsp'], True)
-
-                    self.odl.post(self.odl.controller, self.odl.DEFAULT_PORT, self.odl.SERVICE_CLASSIFICATION_FUNTION, conf['scf1'], True)
+                self.odl.post(self.odl.controller, self.odl.DEFAULT_PORT, self.odl.SERVICE_RENDERED_PATH, conf['rsp'], True)
+                self.odl.post(self.odl.controller, self.odl.DEFAULT_PORT, self.odl.SERVICE_CLASSIFICATION_FUNTION, conf['scf1'], True)
+                self.odl.post(self.odl.controller, self.odl.DEFAULT_PORT, self.odl.SERVICE_CLASSIFICATION_FUNTION, conf['scf3'], True)
+                if 'scf2' in conf:
                     self.odl.post(self.odl.controller, self.odl.DEFAULT_PORT, self.odl.SERVICE_CLASSIFICATION_FUNTION, conf['scf2'], True)
-                    self.odl.post(self.odl.controller, self.odl.DEFAULT_PORT, self.odl.SERVICE_CLASSIFICATION_FUNTION, conf['scf3'], True)
+                if 'scf4' in conf:
                     self.odl.post(self.odl.controller, self.odl.DEFAULT_PORT, self.odl.SERVICE_CLASSIFICATION_FUNTION, conf['scf4'], True)
-
-                elif self.odl.sfcEncap == sfcEncap.VLAN:
-                    self.odl.post(self.odl.controller, self.odl.DEFAULT_PORT, self.odl.SERVICE_CLASSIFICATION_FUNTION, conf['scf1'], True)
-                    self.odl.post(self.odl.controller, self.odl.DEFAULT_PORT, self.odl.SERVICE_RENDERED_PATH, conf['rsp'], True)
 
         scf = conf['scf1']['service-function-classifier']['scl-service-function-forwarder'][0]['name']
         print scf
         if self.odl.sfcEncap == sfcEncap.MAC_CHAIN:
             call('ovs-ofctl -OOpenFlow13 add-flow %s priority=99,actions=normal' % (scf), shell=True)  # normal traffic from no chain
-
-        ############# classifier rules for VLAN encap ################################
-        elif self.odl.sfcEncap == sfcEncap.VLAN:
-            numberOfSFFs = (len(self.sffs) - 1)  # considering one classifier
-
-            for sw in self.callBackConfs['sw']:
-                for swTopo, conf in sw.iteritems():
-                    if swTopo.name == scf:
-                        vlanId = self.odl.getVlanId(self.odl.controller, self.odl.DEFAULT_PORT, "openflow:2", 2)  #
-                        i = 0
-                        while vlanId == None and i < 5:
-                            vlanId = self.odl.getVlanId(self.odl.controller, self.odl.DEFAULT_PORT, "openflow:2", 2)
-                            ++i
-                            time.sleep(2)
-                        call('ovs-ofctl -OOpenFlow13 add-flow %s priority=1000,ip,udp,tp_dst=5010,nw_dst=10.0.0.2,actions=mod_vlan_vid:%s,output:3' % (scf, str(vlanId)), shell=True)  # enter chain upstream
-                        call('ovs-ofctl -OOpenFlow13 add-flow %s priority=1000,ip,udp,tp_dst=5020,nw_dst=10.0.0.2,actions=mod_vlan_vid:%s,output:3' % (scf, str(vlanId)), shell=True)  # enter chain upstream
-
-                        call('ovs-ofctl -OOpenFlow13 add-flow %s priority=1000,ip,tcp,tp_dst=5050,nw_dst=10.0.0.2,actions=mod_nw_ecn=2,mod_vlan_vid:%s,output:3' % (scf, str(vlanId)), shell=True)  # enter chain upstream
-                        call('ovs-ofctl -OOpenFlow13 add-flow %s priority=1000,ip,tcp,tp_dst=5040,nw_dst=10.0.0.2,actions=mod_vlan_vid:%s,output:3' % (scf, str(vlanId)), shell=True)  # enter chain upstream
-                        # call('ovs-ofctl -OOpenFlow13 add-flow %s priority=1000,ip,udp,tp_dst=5011,nw_dst=10.0.0.2,actions=mod_vlan_vid:%s,output:3'%(scf, str(vlanId+100)), shell=True) # enter chain upstream
-                        call('ovs-ofctl -OOpenFlow13 add-flow %s priority=1010,ip,dl_vlan=%s,actions=pop_vlan,mod_dl_dst=00:00:00:00:00:FE,output:5' % (scf, str(vlanId + numberOfSFFs)), shell=True)  # forward to gateway
-                        call('ovs-ofctl -OOpenFlow13 add-flow %s priority=1010,ip,dl_vlan=%s,actions=pop_vlan,mod_dl_dst=00:00:00:00:00:FE,output:5' % (scf, str(vlanId + 100 + numberOfSFFs)), shell=True)  # forward to gateway
-                        call('ovs-ofctl -OOpenFlow13 add-flow %s priority=1020,dl_src=00:00:00:00:00:fe,dl_dst=00:00:00:00:00:02,actions=mod_dl_src=00:00:00:00:00:01,output:2' % (scf), shell=True)  # forwarding packet from gateway to original dst
-                        call('ovs-ofctl -OOpenFlow13 add-flow %s priority=1020,dl_src=00:00:00:00:00:fe,dl_dst=00:00:00:00:00:01,actions=mod_dl_src=00:00:00:00:00:02,output:1' % (scf), shell=True)  # forwarding packet from gateway to original dst
-                        call('ovs-ofctl -OOpenFlow13 add-flow %s priority=99,actions=normal' % (scf), shell=True)  # normal traffic from no chain
-                        call('ovs-ofctl -OOpenFlow13 add-flow %s priority=100,ip,nw_dst=10.0.0.2,actions=output:2' % (scf), shell=True)  # forcing to do to right sw port
-                        call('ovs-ofctl -OOpenFlow13 add-flow %s priority=100,ip,nw_dst=10.0.0.1,actions=output:1' % (scf), shell=True)  # forcing to do to right sw port
-                        # bidirectional rules
-                        # call('ovs-ofctl -OOpenFlow13 add-flow %s priority=1000,udp,nw_dst=10.0.0.1,actions=mod_vlan_vid:%s,output:4' % (scf, str(vlanId+100)), shell=True)  # enter chain downstream
-                        call('ovs-ofctl -OOpenFlow13 add-flow %s priority=1000,ip,tcp,tp_src=5050,nw_dst=10.0.0.1,actions=mod_nw_ecn=2,mod_vlan_vid:%s,output:4' % (scf, str(vlanId + 100)), shell=True)  # enter chain downstream
-                        call('ovs-ofctl -OOpenFlow13 add-flow %s priority=1000,ip,tcp,tp_src=5040,nw_dst=10.0.0.1,actions=mod_vlan_vid:%s,output:4' % (scf, str(vlanId + 100)), shell=True)  # enter chain downstream
-
-                        call('ovs-ofctl -OOpenFlow13 add-flow %s priority=1010,ip,dl_vlan=%s,actions=pop_vlan,mod_dl_dst=00:00:00:00:00:FE,output:5' % (scf, str(vlanId + 100 + numberOfSFFs)), shell=True)  # forward to gateway
-                        #             call('ovs-ofctl -OOpenFlow13 add-flow %s priority=1010,udp,nw_dst=10.0.0.2,udp_dst=5522,actions=mod_nw_ecn=2,mod_vlan_vid:%s,output:3'%(scf, str(vlanId)), shell=True) # enter chain upstream
-                        #        call('ovs-ofctl -OOpenFlow13 add-flow %s priority=1010,icmp,nw_src=10.0.0.1,nw_dst=10.0.0.2,actions=mod_nw_ecn=2,mod_vlan_vid:%s,output:3'%(scf, str(vlanId)), shell=True) # enter chain upstream
-                        #             call('ovs-ofctl -OOpenFlow13 add-flow %s priority=1010,udp,nw_dst=10.0.0.2,udp_dst=5533,actions=mod_nw_ecn=3,mod_vlan_vid:%s,output:3'%(scf, str(vlanId)), shell=True) # enter chain upstream
-                        # call('ovs-ofctl -OOpenFlow13 add-flow %s cookie=0xFF22FF,table=0,priority=1004,in_port=2,dl_dst=00:00:00:00:00:01,actions=output:1' %(scf), shell=True)
-
-                        # bypass gw
-                        call('sudo ovs-ofctl -OOpenFlow13 add-flow %s priority=1060,ip,dl_vlan=%s,nw_dst=10.0.0.2,actions=pop_vlan,mod_dl_dst=00:00:00:00:00:02,mod_dl_src=00:00:00:00:00:01,output:2' % (scf, str(vlanId+1)), shell=True)
-                        call('sudo ovs-ofctl -OOpenFlow13 add-flow %s priority=1060,ip,dl_vlan=%s,nw_dst=10.0.0.2,actions=pop_vlan,mod_dl_dst=00:00:00:00:00:02,mod_dl_src=00:00:00:00:00:01,output:2' % (scf, str(vlanId+1+100)), shell=True)
-
-                        call('sudo ovs-ofctl -OOpenFlow13 add-flow %s priority=1060,ip,dl_vlan=%s,nw_dst=10.0.0.1,actions=pop_vlan,mod_dl_dst=00:00:00:00:00:01,mod_dl_src=00:00:00:00:00:02,output:1' % (scf, str(vlanId+1)), shell=True)
-                        call('sudo ovs-ofctl -OOpenFlow13 add-flow %s priority=1060,ip,dl_vlan=%s,nw_dst=10.0.0.1,actions=pop_vlan,mod_dl_dst=00:00:00:00:00:01,mod_dl_src=00:00:00:00:00:02,output:1' % (scf, str(vlanId+1 + 100)), shell=True)
-
 
     def disableOffLoadFromIfaces(self):
         p = subprocess.Popen(['tcpdump', '-D'], stdout=subprocess.PIPE,  stderr = subprocess.PIPE)

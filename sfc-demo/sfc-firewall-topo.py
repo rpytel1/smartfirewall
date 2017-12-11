@@ -43,14 +43,14 @@ if __name__ == "__main__":
 
     chain = ['fw', 'fw1']
     aclUp = AclAddress("10.0.0.1/32", "10.0.0.4/32")
-    sfc.addChain('c1', sw1, chain, "1", aclUp)  # (8) Add the chain with name, classifier and the chain (list of SFs)
+    sfc.addChain('c1', sw1, chain, "1", aclUp, True)  # (8) Add the chain with name, classifier and the chain (list of SFs)
 
     chain1 = ['fw']
     aclUp1 = AclAddress("10.0.0.2/32", "10.0.0.4/32")
-    sfc.addChain('c2', sw1, chain1, "2", aclUp1)
+    sfc.addChain('c2', sw1, chain1, "2", aclUp1, True)
 
     dummyChain = ['dpi']
-    aclUpDummy = AclAddress("", "10.0.0.0/29")
-    sfc.addChain('c3', sw1, dummyChain, "3", aclUpDummy)
+    aclUpDummy = AclAddress("", "10.0.0.0/30")
+    sfc.addChain('c3', sw1, dummyChain, "3", aclUpDummy, False)
 
 sfc.deployTopo()  # (9) Deploy topology and chain configuration
