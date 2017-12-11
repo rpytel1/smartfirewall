@@ -262,7 +262,7 @@ class odlConf(ConfigBase):
 
         return classifier
 
-    def aclRuleUp(self, rsp, aclName):
+    def aclRuleUp(self, rsp, aclName, aclAddress):
 
         acl = {}
         acl['acl'] = {}
@@ -273,7 +273,12 @@ class odlConf(ConfigBase):
         acl['acl']['access-list-entries']['ace'] = []
         ace = {}
         ace['matches'] = {}
-        ace['matches']['destination-ipv4-network'] = "10.0.0.0/30"
+        if aclAddress.src!="":
+            ace['matches']['source-ipv4-network'] = aclAddress.src
+
+        if aclAddress.dst!="":
+            ace['matches']['destination-ipv4-network'] = aclAddress.dst
+
         ace['matches']['protocol'] = "17"
 
         ace['actions'] = {}
@@ -284,7 +289,7 @@ class odlConf(ConfigBase):
 
         return acl
 
-    def aclRuleUpTcp(self, rsp, aclName):
+    def aclRuleUpTcp(self, rsp, aclName,aclAddress):
 
         acl = {}
         acl['acl'] = {}
@@ -295,14 +300,11 @@ class odlConf(ConfigBase):
         acl['acl']['access-list-entries']['ace'] = []
         ace = {}
         ace['matches'] = {}
-        ace['matches']['destination-ipv4-network'] = "10.0.0.0/30"
+        if aclAddress.src != "":
+            ace['matches']['source-ipv4-network'] = aclAddress.src
+        if aclAddress.dst != "":
+            ace['matches']['destination-ipv4-network'] = aclAddress.dst
         ace['matches']['protocol'] = "6"
-        # ace['matches']['source-port-range'] = {}
-        # ace['matches']['source-port-range']['lower-port'] = "1"
-        # ace['matches']['source-port-range']['upper-port'] = "6000"
-        # ace['matches']['destination-port-range'] = {}
-        # ace['matches']['destination-port-range']['lower-port'] = "1"
-        # ace['matches']['destination-port-range']['upper-port'] = "6000"
 
         ace['actions'] = {}
         ace['actions']['service-function-acl:rendered-service-path'] = rsp
@@ -312,7 +314,7 @@ class odlConf(ConfigBase):
 
         return acl
 
-    def aclRuleDownTcp(self, rsp, aclName):
+    def aclRuleDownTcp(self, rsp, aclName, aclAddress):
         acl = {}
         acl['acl'] = {}
         acl['acl']['acl-type'] = "ietf-access-control-list:ipv4-acl"
@@ -322,14 +324,11 @@ class odlConf(ConfigBase):
         acl['acl']['access-list-entries']['ace'] = []
         ace = {}
         ace['matches'] = {}
-        ace['matches']['destination-ipv4-network'] = "10.0.0.4/32"
+        if aclAddress.dst != "":
+            ace['matches']['source-ipv4-network'] = aclAddress.dst
+        if aclAddress.src != "":
+            ace['matches']['destination-ipv4-network'] = aclAddress.src
         ace['matches']['protocol'] = "6"
-        # ace['matches']['source-port-range'] = {}
-        # ace['matches']['source-port-range']['lower-port'] = "1"
-        # ace['matches']['source-port-range']['upper-port'] = "6000"
-        # ace['matches']['destination-port-range'] = {}
-        # ace['matches']['destination-port-range']['lower-port'] = "1"
-        # ace['matches']['destination-port-range']['upper-port'] = "6000"
 
         ace['actions'] = {}
         ace['actions']['service-function-acl:rendered-service-path'] = rsp + "-Reverse"
@@ -339,7 +338,7 @@ class odlConf(ConfigBase):
 
         return acl
 
-    def aclRuleDown(self, rsp, aclName):
+    def aclRuleDown(self, rsp, aclName, aclAddress):
         acl = {}
         acl['acl'] = {}
         acl['acl']['acl-type'] = "ietf-access-control-list:ipv4-acl"
@@ -349,7 +348,10 @@ class odlConf(ConfigBase):
         acl['acl']['access-list-entries']['ace'] = []
         ace = {}
         ace['matches'] = {}
-        ace['matches']['destination-ipv4-network'] = "10.0.0.4/32"
+        if aclAddress.dst!="":
+            ace['matches']['source-ipv4-network'] = aclAddress.dst
+        if aclAddress.src!="":
+            ace['matches']['destination-ipv4-network'] = aclAddress.src
         ace['matches']['protocol'] = "17"
 
         ace['actions'] = {}

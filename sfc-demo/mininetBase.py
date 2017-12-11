@@ -200,12 +200,11 @@ class SFC:
         portSw1 = sw1.ports[link.intf1]
         self.odl.appendSffConf(self.getODLSwConf(sw1), portSw1, str(self.sffs.index(sw1) +1), self.getODLSwConf(sw2), portSw2, str(self.sffs.index(sw2) +1))
 
-    def addChain(self, name, sw1, chain, id):
+    def addChain(self, name, sw1, chain, id, aclAddress):
 
         chainConf = {}
         chainConf[name] = {}
         chainConf[name]['sfc'] = self.odl.setChain(name, chain)
-
 
         aclName1 = "acl.up" + id
         aclName2 = "acl.down" + id
@@ -223,12 +222,10 @@ class SFC:
 
         chainConf[name]['rsp'] = self.odl.rederedRPC(chainConf[name]['sfp']['service-function-path']['name'])
 
-        # classifiers rules for MAC Chaining
-        if self.odl.sfcEncap == sfcEncap.MAC_CHAIN:
-            chainConf[name]['acl1'] = self.odl.aclRuleUp(chainConf[name]['rsp']['input']['name'], aclName1)
-            chainConf[name]['acl2'] = self.odl.aclRuleDown(chainConf[name]['rsp']['input']['name'], aclName2)
-            chainConf[name]['acl3'] = self.odl.aclRuleUpTcp(chainConf[name]['rsp']['input']['name'], aclName3)
-            chainConf[name]['acl4'] = self.odl.aclRuleDownTcp(chainConf[name]['rsp']['input']['name'], aclName4)
+        chainConf[name]['acl1'] = self.odl.aclRuleUp(chainConf[name]['rsp']['input']['name'], aclName1, aclAddress)
+        chainConf[name]['acl2'] = self.odl.aclRuleDown(chainConf[name]['rsp']['input']['name'], aclName2, aclAddress)
+        chainConf[name]['acl3'] = self.odl.aclRuleUpTcp(chainConf[name]['rsp']['input']['name'], aclName3, aclAddress)
+        chainConf[name]['acl4'] = self.odl.aclRuleDownTcp(chainConf[name]['rsp']['input']['name'], aclName4, aclAddress)
 
 
         self.callBackConfs['chain'].append(chainConf)
