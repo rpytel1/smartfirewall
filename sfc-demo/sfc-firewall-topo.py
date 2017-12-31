@@ -30,7 +30,7 @@ if __name__ == "__main__":
     sf1 = sfc.addSf('1', sw2,
                     'fw')  # snort hacking         #(4) Add SFs with the SFF which it is connected and the SF type
     sf2 = sfc.addSf('2', sw3, 'fw1')  # snort protocols
-    sf3 = sfc.addSf('2', sw2, 'dpi')
+    sf3 = sfc.addSf('3', sw2, 'dpi')
 
     sfc.addLink(sw1, sw2)  # (5) Add link among SFFs
     sfc.addLink(sw2, sw3)

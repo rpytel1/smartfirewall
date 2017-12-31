@@ -85,29 +85,29 @@ class SFC:
 
     def addSf(self, num, sw, type):
         sf = self.net.addHost("sf%s" % (num))
-        link = self.net.addLink(sf, sw)
+        #link = self.net.addLink(sf, sw)
         ports = []
-        ports.append(sw.ports[link.intf2])
+        mac = []
+        mac.append('08:00:27:4e:0f:a0')
+        ports.append(1)
         sfConf = {}
         sfConf[sf] = {}
         sfConf[sf]['IP'] = []
         sfConf[sf]['MAC'] = []
-        sfConf[sf]['IP'].append('10.0.0.1%s' % (num))
-        sfConf[sf]['MAC'].append('00:00:00:00:00:1%s' % (num))
+        # sfConf[sf]['IP'].append('10.0.0.1%s' % (num))
+        sfIp='192.168.1.5'
+        #sfConf[sf]['IP'].append(sfIp)
+        #sfConf[sf]['MAC'].append('00:00:00:00:00:1%s' % (num))
+        #sfConf[sf]['MAC'].append('00:00:00:00:00:1%s' % (num))
         sfConf[sf]['iface'] = []
-        sfConf[sf]['iface'].append(link.intf1)
+        # sfConf[sf]['iface'].append(link.intf1)
         tag = 300 + int(num)
         sfConf[sf]['CMD'] = []
 
-        #for Vlan sfc encapsulation sf interfaces are tagged to spesific VLAN IDs
-        if self.odl.sfcEncap == sfcEncap.VLAN:
-            sfConf[sf]['CMD'].append("vconfig add sf%s-eth0 %s" % (num, str(tag)))
-            sfConf[sf]['CMD'].append("ip link set up sf%s-eth0.%s" % (num, str(tag)))
-            sfConf[sf]['CMD'].append("python ./functions/sf_dummy.py sf%s-eth0.%s %s > /tmp/sf%s.out  &" % (num, str(tag), str(tag), num))
-        elif self.odl.sfcEncap == sfcEncap.MAC_CHAIN:
-            sfConf[sf]['CMD'].append("python ./functions/sf_dummy.py sf%s-eth0 > /tmp/sf%s.out  &" % (num, num))
 
-        sfConf[sf]['CONF'] = self.odl.sfConf(sf.name, num, type, sfConf[sf]['IP'], sw.name, tag, sfConf[sf]['MAC'], ports, self.getODLSwConf(sw))
+        #sfConf[sf]['CMD'].append("python ./functions/sf_dummy.py sf%s-eth0 > /tmp/sf%s.out  &" % (num, num))
+
+        sfConf[sf]['CONF'] = self.odl.sfConf(sf.name, num, type, sfIp, sw.name, tag, mac, ports, self.getODLSwConf(sw))
         self.callBackConfs['sf'].append(sfConf)
 
         return sf

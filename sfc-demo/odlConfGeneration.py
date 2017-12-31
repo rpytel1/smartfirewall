@@ -49,7 +49,7 @@ class odlConf(ConfigBase):
         sf = {}
         sf['name'] = name
         sf['type'] = "service-function-type:" + type
-        sf['ip-mgmt-address'] = ip[0]
+        sf['ip-mgmt-address'] = ip
         sf['sf-data-plane-locator'] = []
 
         i = 0
@@ -58,12 +58,9 @@ class odlConf(ConfigBase):
             sfDpl['name'] = name + "-plane-" + str(i)
             sfDpl['service-function-forwarder'] = sff
             sfDpl['vlan-id'] = vlan
-            if (i == 0):
-                sfDpl['mac'] = mac
-            else:  # if it is two arm (snort case) seting the scond arm mac equals to the src mac addres from the input
-                sfDpl['mac'] = 'FF:00:00:00:FF:%s%d' % (id, port)
 
-            i += 1
+            sfDpl['mac'] = mac
+
             sfDpl['transport'] = "service-locator:mac"
             sf['sf-data-plane-locator'].append(sfDpl)
 
