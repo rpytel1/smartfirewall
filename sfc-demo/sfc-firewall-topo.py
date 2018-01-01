@@ -30,7 +30,7 @@ if __name__ == "__main__":
     sf1 = sfc.addSf('1', sw2,
                     'fw')  # snort hacking         #(4) Add SFs with the SFF which it is connected and the SF type
     sf2 = sfc.addSf('2', sw3, 'fw1')  # snort protocols
-    sf3 = sfc.addSf('2', sw2, 'dpi')
+    sf3 = sfc.addSf('3', sw2, 'dpi')
 
     sfc.addLink(sw1, sw2)  # (5) Add link among SFFs
     sfc.addLink(sw2, sw3)
@@ -42,15 +42,15 @@ if __name__ == "__main__":
 
 
     chain = ['fw', 'fw1']
-    aclUp = AclAddress("10.0.0.1/32", "10.0.0.4/32")
+    aclUp = AclAddress("10.0.0.2/32", "10.0.0.4/32")
     sfc.addChain('c1', sw1, chain, "1", aclUp, True)  # (8) Add the chain with name, classifier and the chain (list of SFs)
 
-    chain1 = ['fw']
-    aclUp1 = AclAddress("10.0.0.2/32", "10.0.0.4/32")
+    chain1 = ['fw1']
+    aclUp1 = AclAddress("10.0.0.1/32", "10.0.0.4/32")
     sfc.addChain('c2', sw1, chain1, "2", aclUp1, True)
 
-    dummyChain = ['dpi']
-    aclUpDummy = AclAddress("", "10.0.0.0/30")
-    sfc.addChain('c3', sw1, dummyChain, "3", aclUpDummy, False)
+    #dummyChain = ['dpi']
+    #aclUpDummy = AclAddress("10.0.0.0/29", "10.0.0.0/29")
+    #sfc.addChain('c3', sw1, dummyChain, "3", aclUpDummy, True)
 
 sfc.deployTopo()  # (9) Deploy topology and chain configuration

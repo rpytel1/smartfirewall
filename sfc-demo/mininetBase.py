@@ -168,7 +168,7 @@ class SFC:
         swConf = {}
         swConf[sw] = {}
         swConf[sw]['CMD'] = []
-        swConf[sw]['CMD'].append('ovs-vsctl set bridge %s protocols=OpenFlow13'%(sw.name))
+        swConf[sw]['CMD'].append('ovs-vsctl set bridge %s protocols=OpenFlow10'%(sw.name))
 
         swConf[sw]['CONF'] = self.odl.sffConfBase(sw.name, num, self.ovsUuid)
         self.callBackConfs['sw'].append(swConf)
@@ -316,7 +316,7 @@ class SFC:
         scf = conf['scf1']['service-function-classifier']['scl-service-function-forwarder'][0]['name']
         print scf
         if self.odl.sfcEncap == sfcEncap.MAC_CHAIN:
-            call('ovs-ofctl -OOpenFlow13 add-flow %s priority=99,actions=normal' % (scf), shell=True)  # normal traffic from no chain
+            call('ovs-ofctl -OOpenFlow10 add-flow %s priority=99,actions=normal' % (scf), shell=True)  # normal traffic from no chain
 
     def disableOffLoadFromIfaces(self):
         p = subprocess.Popen(['tcpdump', '-D'], stdout=subprocess.PIPE,  stderr = subprocess.PIPE)

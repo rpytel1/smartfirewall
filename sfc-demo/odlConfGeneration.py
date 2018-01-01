@@ -42,7 +42,7 @@ class odlConf(ConfigBase):
                 print conf['CONF']['service-function-forwarder'][0]['service-node']
                 self.deleteAllFlows(self.controller, self.DEFAULT_PORT,
                                     conf['CONF']['service-function-forwarder'][0]['service-node'])
-                call('ovs-ofctl -OOpenFlow13 del-flows %s' % (swTopo.name), shell=True)
+                call('ovs-ofctl -OOpenFlow10 del-flows %s' % (swTopo.name), shell=True)
 
     def sfConf(self, name, id, type, ip, sff, vlan, macs, ports, confSff):
 
