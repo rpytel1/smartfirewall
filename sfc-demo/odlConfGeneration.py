@@ -9,7 +9,6 @@ class sfcEncap:
     VLAN = 1
     MAC_CHAIN = 2
 
-
 class odlConf(ConfigBase):
     sfcEncap = None
 
@@ -37,12 +36,12 @@ class odlConf(ConfigBase):
         if self.sfcEncap == sfcEncap.MAC_CHAIN:
             self.delete(self.controller, self.DEFAULT_PORT, self.ACCESS_CONTROL_LIST, True)
 
+
         for sw in swList:
             for swTopo, conf in sw.iteritems():
                 print conf['CONF']['service-function-forwarder'][0]['service-node']
-                self.deleteAllFlows(self.controller, self.DEFAULT_PORT,
-                                    conf['CONF']['service-function-forwarder'][0]['service-node'])
-                call('ovs-ofctl -OOpenFlow10 del-flows %s' % (swTopo.name), shell=True)
+                self.deleteAllFlows(self.controller, self.DEFAULT_PORT, conf['CONF']['service-function-forwarder'][0]['service-node'])
+                call('ovs-ofctl -OOpenFlow13 del-flows %s' % (swTopo.name), shell=True)
 
     def sfConf(self, name, id, type, ip, sff, vlan, macs, ports, confSff):
 
@@ -104,6 +103,8 @@ class odlConf(ConfigBase):
 
         return sfTypes
 
+
+
     def sffConfBase(self, swName, id, uuid):
 
         print "config sff"
@@ -115,9 +116,10 @@ class odlConf(ConfigBase):
         sff['service-function-forwarder-ovs:ovs-bridge'] = {}
         sff['service-function-forwarder-ovs:ovs-bridge']['bridge-name'] = swName
         sff['service-function-forwarder-ovs:ovs-bridge']['openflow-node-id'] = "openflow:" + id
+        #sff['service-function-forwarder-ovs:ovs-bridge']['uuid'] = uuid
         sff['service-function-forwarder-ovs:ovs-node'] = {}
-        sff['service-function-forwarder-ovs:ovs-node'][
-            'node-id'] = "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:" + id + "']"
+        #sff['service-function-forwarder-ovs:ovs-node']['node-id'] = "/network-topology:network-topology/network-topology:topology[network-topology:topology-id='ovsdb=1']/network-topology:node[network-topology:node-id='ovsdb://uuid/"+uuid+"']"
+        sff['service-function-forwarder-ovs:ovs-node']['node-id'] = "/opendaylight-inventory:nodes/opendaylight-inventory:node[opendaylight-inventory:id='openflow:"+id+"']"
         sff['sff-data-plane-locator'] = []
 
         sfdpl = {}
@@ -126,8 +128,7 @@ class odlConf(ConfigBase):
         sfdpl['data-plane-locator'] = {}
         sfdpl['data-plane-locator']['transport'] = "service-locator:vxlan-gpe"
         sfdpl['data-plane-locator']['port'] = 6633
-        sffDataPlaneIp = "192.168.1.6"
-        sfdpl['data-plane-locator']['ip'] = sffDataPlaneIp
+        sfdpl['data-plane-locator']['ip'] = "192.168.1.6"
 
         sff['sff-data-plane-locator'].append(sfdpl)
 
@@ -146,11 +147,13 @@ class odlConf(ConfigBase):
         toSffDpl1 = {}
         toSffDpl1['name'] = "to-" + confSff2['service-function-forwarder'][0]['name']
         toSffDpl1['data-plane-locator'] = {}
-        toSffDpl1['data-plane-locator']['vlan-id'] = '%s%s' % (id1, id2)
+        toSffDpl1['data-plane-locator']['vlan-id'] = '%s%s'% (id1, id2)
         toSffDpl1['data-plane-locator']['mac'] = 'AA:00:00:00:AA:%s%s' % (id1, id2)
         toSffDpl1['data-plane-locator']['transport'] = "service-locator:mac"
         toSffDpl1['service-function-forwarder-ofs:ofs-port'] = {}
         toSffDpl1['service-function-forwarder-ofs:ofs-port']['port-id'] = p1
+
+
 
         toSffDpl2 = {}
         toSffDpl2['name'] = "to-" + confSff1['service-function-forwarder'][0]['name']
@@ -179,6 +182,7 @@ class odlConf(ConfigBase):
         confSff1['service-function-forwarder'][0]['connected-sff-dictionary'].append(sffdpl1)
         confSff2['service-function-forwarder'][0]['connected-sff-dictionary'].append(sffdpl2)
 
+
     def appendSffTermination(self, confSff, port, id1, mac):
         termination = {}
         termination['name'] = confSff['service-function-forwarder'][0]['name'] + "-to-gateway"
@@ -190,6 +194,7 @@ class odlConf(ConfigBase):
         termination['service-function-forwarder-termination:termination-point']['mac-address'] = mac
 
         confSff['service-function-forwarder'][0]['sff-data-plane-locator'].append(termination)
+
 
     def setChain(self, name, chainList):
 
@@ -204,11 +209,13 @@ class odlConf(ConfigBase):
             chainElement['order'] = chainList.index(element)
             chain['sfc-service-function'].append(chainElement)
 
+
         sfc = {}
         sfc['service-function-chain'] = []
         sfc['service-function-chain'].append(chain)
 
         return sfc
+
 
     def setChainPath(self, name, scf1, scf2):
         chainPath = {}
@@ -217,23 +224,12 @@ class odlConf(ConfigBase):
         chainPath['service-function-path']['service-chain-name'] = name
         chainPath['service-function-path']['classifier'] = scf1
         chainPath['service-function-path']['symmetric-classifier'] = scf2
-        chainPath['service-function-path']['symmetric'] = "true"  # "true"
+        chainPath['service-function-path']['symmetric'] = "true"#"true"
         chainPath['service-function-path']['transport-type'] = "service-locator:mac"
-        chainPath['service-function-path']['sfc-encapsulation'] = "service-locator:mac-chaining"
+        if self.sfcEncap == sfcEncap.MAC_CHAIN:
+            chainPath['service-function-path']['sfc-encapsulation'] = "service-locator:mac-chaining"
 
         return chainPath
-    def setAssymetricChainPath(self, name, scf1):
-        chainPath = {}
-        chainPath['service-function-path'] = {}
-        chainPath['service-function-path']['name'] = name + "-path"
-        chainPath['service-function-path']['service-chain-name'] = name
-        chainPath['service-function-path']['classifier'] = scf1
-        chainPath['service-function-path']['symmetric'] = "false"
-        chainPath['service-function-path']['transport-type'] = "service-locator:mac"
-        chainPath['service-function-path']['sfc-encapsulation'] = "service-locator:mac-chaining"
-
-        return chainPath
-
 
     def setClassifier1(self, sff, aclName):
 
@@ -244,7 +240,7 @@ class odlConf(ConfigBase):
 
         scf = {}
         scf['name'] = sff
-        scf['interface'] = "SFF1-eth1"  # classifier just used to configure termination path (VLAN technique)
+        scf['interface'] = "SFF1-eth1" #classifier just used to configure termination path (VLAN technique)
 
         classifier['service-function-classifier']['scl-service-function-forwarder'].append(scf)
 
@@ -273,7 +269,7 @@ class odlConf(ConfigBase):
 
         return classifier
 
-    def aclRuleUp(self, rsp, aclName, aclAddress):
+    def aclRuleUp(self, rsp, aclName, isSeccond):
 
         acl = {}
         acl['acl'] = {}
@@ -284,13 +280,17 @@ class odlConf(ConfigBase):
         acl['acl']['access-list-entries']['ace'] = []
         ace = {}
         ace['matches'] = {}
-        if aclAddress.src!="":
-            ace['matches']['source-ipv4-network'] = aclAddress.src
-
-        if aclAddress.dst!="":
-            ace['matches']['destination-ipv4-network'] = aclAddress.dst
-
+        if isSeccond:
+            ace['matches']['destination-ipv4-network'] = "10.0.0.2/32"
+        else:
+            ace['matches']['destination-ipv4-network'] = "10.0.0.4/32"
         ace['matches']['protocol'] = "17"
+        #ace['matches']['source-port-range'] = {}
+        #ace['matches']['source-port-range']['lower-port'] = "0"
+        #ace['matches']['source-port-range']['upper-port'] = "65000"
+        #ace['matches']['destination-port-range'] = {}
+        #ace['matches']['destination-port-range']['lower-port'] = "0"
+        #ace['matches']['destination-port-range']['upper-port'] = "65000"
 
         ace['actions'] = {}
         ace['actions']['service-function-acl:rendered-service-path'] = rsp
@@ -300,7 +300,7 @@ class odlConf(ConfigBase):
 
         return acl
 
-    def aclRuleUpTcp(self, rsp, aclName,aclAddress):
+    def aclRuleUpTcp(self, rsp, aclName, isSeccond):
 
         acl = {}
         acl['acl'] = {}
@@ -311,11 +311,17 @@ class odlConf(ConfigBase):
         acl['acl']['access-list-entries']['ace'] = []
         ace = {}
         ace['matches'] = {}
-        if aclAddress.src != "":
-            ace['matches']['source-ipv4-network'] = aclAddress.src
-        if aclAddress.dst != "":
-            ace['matches']['destination-ipv4-network'] = aclAddress.dst
+        if isSeccond:
+            ace['matches']['destination-ipv4-network'] = "10.0.0.2/32"
+        else:
+            ace['matches']['destination-ipv4-network'] = "10.0.0.4/32"
         ace['matches']['protocol'] = "6"
+        #ace['matches']['source-port-range'] = {}
+        #ace['matches']['source-port-range']['lower-port'] = "1"
+        #ace['matches']['source-port-range']['upper-port'] = "6000"
+        #ace['matches']['destination-port-range'] = {}
+        #ace['matches']['destination-port-range']['lower-port'] = "1"
+        #ace['matches']['destination-port-range']['upper-port'] = "6000"
 
         ace['actions'] = {}
         ace['actions']['service-function-acl:rendered-service-path'] = rsp
@@ -325,7 +331,7 @@ class odlConf(ConfigBase):
 
         return acl
 
-    def aclRuleDownTcp(self, rsp, aclName, aclAddress):
+    def aclRuleDownTcp(self, rsp, aclName, isSeccond):
         acl = {}
         acl['acl'] = {}
         acl['acl']['acl-type'] = "ietf-access-control-list:ipv4-acl"
@@ -335,11 +341,17 @@ class odlConf(ConfigBase):
         acl['acl']['access-list-entries']['ace'] = []
         ace = {}
         ace['matches'] = {}
-        if aclAddress.dst != "":
-            ace['matches']['source-ipv4-network'] = aclAddress.dst
-        if aclAddress.src != "":
-            ace['matches']['destination-ipv4-network'] = aclAddress.src
+        if isSeccond:
+            ace['matches']['destination-ipv4-network'] = "10.0.0.1/32"
+        else:
+            ace['matches']['destination-ipv4-network'] = "10.0.0.3/32"
         ace['matches']['protocol'] = "6"
+        #ace['matches']['source-port-range'] = {}
+        #ace['matches']['source-port-range']['lower-port'] = "1"
+        #ace['matches']['source-port-range']['upper-port'] = "6000"
+        #ace['matches']['destination-port-range'] = {}
+        #ace['matches']['destination-port-range']['lower-port'] = "1"
+        #ace['matches']['destination-port-range']['upper-port'] = "6000"
 
         ace['actions'] = {}
         ace['actions']['service-function-acl:rendered-service-path'] = rsp + "-Reverse"
@@ -349,7 +361,8 @@ class odlConf(ConfigBase):
 
         return acl
 
-    def aclRuleDown(self, rsp, aclName, aclAddress):
+
+    def aclRuleDown(self, rsp, aclName, isSeccond):
         acl = {}
         acl['acl'] = {}
         acl['acl']['acl-type'] = "ietf-access-control-list:ipv4-acl"
@@ -359,11 +372,17 @@ class odlConf(ConfigBase):
         acl['acl']['access-list-entries']['ace'] = []
         ace = {}
         ace['matches'] = {}
-        if aclAddress.dst!="":
-            ace['matches']['source-ipv4-network'] = aclAddress.dst
-        if aclAddress.src!="":
-            ace['matches']['destination-ipv4-network'] = aclAddress.src
+        if isSeccond:
+            ace['matches']['destination-ipv4-network'] = "10.0.0.1/32"
+        else:
+            ace['matches']['destination-ipv4-network'] = "10.0.0.3/32"
         ace['matches']['protocol'] = "17"
+        #ace['matches']['source-port-range'] = {}
+        #ace['matches']['source-port-range']['lower-port'] = "0"
+        #ace['matches']['source-port-range']['upper-port'] = "65000"
+        #ace['matches']['destination-port-range'] = {}
+        #ace['matches']['destination-port-range']['lower-port'] = "0"
+        #ace['matches']['destination-port-range']['upper-port'] = "65000"
 
         ace['actions'] = {}
         ace['actions']['service-function-acl:rendered-service-path'] = rsp + "-Reverse"
@@ -372,18 +391,22 @@ class odlConf(ConfigBase):
         acl['acl']['access-list-entries']['ace'].append(ace)
 
         return acl
+
 
     def rederedRPC(self, chainPath):
         rsp = {}
         rsp['input'] = {}
         rsp['input']['name'] = chainPath + "-rend"
         rsp['input']['parent-service-function-path'] = chainPath
-        rsp['input']['symmetric'] = "true"  # "true"
+        rsp['input']['symmetric'] = "true"#"true"
 
         return rsp
 
-    def disableStatistics(self):
+    def disableStatistics (self):
         input = {}
         input['input'] = {}
         input['input']['mode'] = "FULLY_DISABLED"
-        return input
+        return  input
+
+
+
