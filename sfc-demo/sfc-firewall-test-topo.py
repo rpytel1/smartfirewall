@@ -20,9 +20,8 @@ if __name__ == "__main__":
     h4 = sfc.addHost(sw1)
 
     sf1 = sfc.addSfSpecial('1', sw2, 'fw')           #(4) Add SFs with the SFF which it is connected and the SF type
-    #sf1 = sfc.addSf('1', sw2, 'fw')
-    sf2 = sfc.addSf('2', sw2, 'dpi')
-    sf3 = sfc.addSf('3', sw3, 'fw1')
+    sf2 = sfc.addSfSpecial('2', sw2, 'dpi')
+    sf3 = sfc.addSfSpecial('3', sw3, 'fw1')
 
     sfc.addLink(sw1, sw2)                     #(5) Add link among SFFs
     sfc.addLink(sw2, sw3)
