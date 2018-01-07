@@ -305,9 +305,9 @@ class SFC:
     def deploySwConf(self):
         for sw in self.callBackConfs['sw']:
             for swTopo, conf in sw.iteritems():
-                #print swTopo.name
+                print swTopo.name
                 for cmd in conf['CMD']:
-                    #print cmd
+                    print cmd
                     call(cmd, shell=True)
 
     def deployODLConf(self):
@@ -349,7 +349,7 @@ class SFC:
             scf = conf['scf1']['service-function-classifier']['scl-service-function-forwarder'][0]['name']
         else:
             scf = conf['scf3']['service-function-classifier']['scl-service-function-forwarder'][0]['name']
-        #print scf
+        print scf
         if self.odl.sfcEncap == sfcEncap.MAC_CHAIN:
             call('ovs-ofctl -OOpenFlow13 add-flow %s priority=99,actions=normal' % (scf), shell=True)  # normal traffic from no chain
 
@@ -369,7 +369,7 @@ class SFC:
     def cleanProcess(self):
         for cmds in self.popens.values():
             for cmd in cmds:
-               # print cmd
+                print cmd
                 call('kill %d' %(cmd), shell=True) #SIGINT
 
     def getOvsdbId(self):
