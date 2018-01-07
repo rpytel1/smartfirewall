@@ -284,7 +284,7 @@ class odlConf(ConfigBase):
             ace['matches']['destination-ipv4-network'] = "10.0.0.2/32"
         else:
             ace['matches']['destination-ipv4-network'] = "10.0.0.4/32"
-        ace['matches']['protocol'] = "17"
+        # ace['matches']['protocol'] = "17"
         #ace['matches']['source-port-range'] = {}
         #ace['matches']['source-port-range']['lower-port'] = "0"
         #ace['matches']['source-port-range']['upper-port'] = "65000"
@@ -315,7 +315,7 @@ class odlConf(ConfigBase):
             ace['matches']['destination-ipv4-network'] = "10.0.0.2/32"
         else:
             ace['matches']['destination-ipv4-network'] = "10.0.0.4/32"
-        ace['matches']['protocol'] = "6"
+        # ace['matches']['protocol'] = "6"
         #ace['matches']['source-port-range'] = {}
         #ace['matches']['source-port-range']['lower-port'] = "1"
         #ace['matches']['source-port-range']['upper-port'] = "6000"
@@ -376,7 +376,7 @@ class odlConf(ConfigBase):
             ace['matches']['destination-ipv4-network'] = "10.0.0.1/32"
         else:
             ace['matches']['destination-ipv4-network'] = "10.0.0.3/32"
-        ace['matches']['protocol'] = "17"
+       # ace['matches']['protocol'] = "17"
         #ace['matches']['source-port-range'] = {}
         #ace['matches']['source-port-range']['lower-port'] = "0"
         #ace['matches']['source-port-range']['upper-port'] = "65000"
