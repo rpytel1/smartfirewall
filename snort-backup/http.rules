@@ -1,0 +1,1 @@
+alert tcp any any -> any 80 (msg:"get";content:"GET";sid:10002340000;)
