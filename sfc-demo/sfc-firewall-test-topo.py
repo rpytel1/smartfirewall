@@ -30,11 +30,10 @@ if __name__ == "__main__":
 
     sfc.addGw(sw1)                            #(6) Add gateway at the end of the chain
 
-    chain = ['fw', 'dpi']       #(7) The chain (list of SFs)
+    chain = ['fw', 'dpi','fw1']       #(7) The chain (list of SFs)
 
     sfc.addChain('c1', sw1, chain, True)
-    chain = ['fw1']                            #(8) Add the chain with name, classifier and the chain (list of SFs)
-    sfc.addChain('c2', sw1, chain, False)
+
 
     sfc.deployTopo()                          #(9) Deploy topology and chain configuration
 

@@ -93,8 +93,8 @@ class SFC:
         sfConf[sf] = {}
         sfConf[sf]['IP'] = []
         sfConf[sf]['MAC'] = []
-        sfConf[sf]['IP'].append('10.0.0.11')
-        sfConf[sf]['MAC'].append('00:00:00:00:00:11')
+        sfConf[sf]['IP'].append('10.0.0.1%s'%(num))
+        sfConf[sf]['MAC'].append('00:00:00:00:00:1%s'%(num))
         sfConf[sf]['iface'] = []
         sfConf[sf]['iface'].append(linkSnort.intf1)
         sfConf[sf]['CMD'] = []
@@ -102,8 +102,8 @@ class SFC:
         snortConf[snort] = {}
         snortConf[snort]['IP'] = []
         snortConf[snort]['MAC'] = []
-        snortConf[snort]['IP'].append('10.0.0.21')
-        snortConf[snort]['IP'].append('10.0.0.22')
+        snortConf[snort]['IP'].append('10.0.0.2%s' %(num))
+        snortConf[snort]['IP'].append('10.0.0.3%s' %(num))
         snortConf[snort]['MAC'].append('00:00:00:00:0%s:1%s' % (num,num))
         snortConf[snort]['MAC'].append('00:00:00:00:%s0:1%s' % (num,num))
         snortConf[snort]['iface'] = []
@@ -113,7 +113,6 @@ class SFC:
         snortConf[snort]['CMD'] = []
         if self.odl.sfcEncap == sfcEncap.MAC_CHAIN:
             sfConf[sf]['CMD'].append("python ./functions/sf_dummy.py sf%s-eth0 > /tmp/sf%s.out  &" % (num, num))
-            #sfConf[snort]['CMD'].append("")
 
         sfConf[sf]['CONF'] = self.odl.sfConf(sf.name, num, type, sfConf[sf]['IP'], sw.name, tag, sfConf[sf]['MAC'], ports, self.getODLSwConf(sw))
         self.callBackConfs['sf'].append(sfConf)
